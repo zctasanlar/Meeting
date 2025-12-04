@@ -1,0 +1,87 @@
+version: '3.8' # Kullanılan Compose dosya formatının sürümü
+
+services:
+  # ------------------------------------------------
+  # 1. Spring Boot Uygulama Servisi
+  # ------------------------------------------------
+  app:
+    # Docker imajını yerel olarak derlemek için kullanılır.
+    # Bu, Dockerfile'ınızın nerede olduğunu söyler.
+    build:
+      context: .
+      dockerfile: Dockerfile # Projenizin kök dizinindeki Dockerfile'ı kullan.
+      # Çok aşamalı derlemede (multi-stage) son aşamayı belirtir (Final Production Image).
+      target: final
+
+    # Konteynerin adını belirler
+    container_name: meeting_container
+
+    # Port yönlendirme (Host:Container). 8080:8080 ayarını burada yapıyoruz.
+    ports:
+      - "8080:8080"
+
+    # Bu servislerin çalışması için bağımlı olduğu diğer servisler.
+#    depends_on:
+#      - db # Veritabanı servisi başlayana kadar bekle.
+
+    # Uygulama için ortam değişkenleri (Spring Boot konfigürasyonu)
+    #environment:
+      # Spring'in veritabanına nasıl bağlanacağını tanımlar.
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
+#      SPRING_DATASOURCE_USERNAME: user
+#      SPRING_DATASOURCE_PASSWORD: password
+
+    # Konteynerin beklenmedik şekilde durması durumunda yeniden başlatılmasını sağlar.
+    restart: always
+
+  watchtower:
+    # Watchtower'ın resmi imajı.
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+
+    # Konteynerların izlenmesi ve güncellenmesi için Docker Socket erişimi gerekir.
+    volumes:
+      # Docker'ın kendi API'sine erişim izni verir. ZORUNLUDUR.
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    # Ortam değişkenleri ile Watchtower'ın nasıl çalışacağını yapılandırın.
+    environment:
+      # Sadece bir kerelik çalıştırmak ve çıkmak yerine, sürekli izleme yapar.
+      WATCHTOWER_POLL_INTERVAL: 86400 # Saniye cinsinden (Örn: 300 saniye = 5 dakikada bir kontrol et)
+      # Güncelleme sırasında eski imajları silmeyi etkinleştirir.
+      WATCHTOWER_CLEANUP: true
+      # Watchtower'ın kendisini güncellemesini engeller (isteğe bağlı).
+      WATCHTOWER_SELF_UPDATE: true
+
+    # Watchtower servisini diğer uygulamalar başlamadan önce başlatmaya gerek yoktur.
+    restart: always
+  # ------------------------------------------------
+  # 2. Veritabanı Servisi (PostgreSQL Örneği)
+  # ------------------------------------------------
+#  db:
+#    image: postgres:14-alpine # Hafif bir PostgreSQL imajı
+#    container_name: postgres_db_container
+#
+#    # Ortam değişkenleri ile veritabanı kullanıcı adı ve şifresi tanımlanır.
+#    environment:
+#      POSTGRES_USER: user
+#      POSTGRES_PASSWORD: password
+#      POSTGRES_DB: postgres # Veritabanı adı
+#
+#    # Verilerin kalıcı olması için volume kullanılır.
+#    # Bu, konteyner silinse bile veritabanı verilerinizin kaybolmamasını sağlar.
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#
+#    # Sadece veritabanına dışarıdan erişim sağlamak isterseniz açın, zorunlu değildir.
+#    # ports:
+#    #   - "5432:5432"
+#
+#    restart: always
+
+# ------------------------------------------------
+# Veri Kalıcılığı (Volumes)
+# ------------------------------------------------
+#volumes:
+#  postgres_data:
+#    driver: local
