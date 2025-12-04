@@ -31,9 +31,6 @@ public class ParticipantEntity {
     private String IdentityNumber;
 
 
-    @Column(name = "qr_code")
-    private String QR_code;
-
     @Column(name = "rrole_id")
     private UUID RRoleId;
 }

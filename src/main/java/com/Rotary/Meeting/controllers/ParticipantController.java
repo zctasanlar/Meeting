@@ -2,10 +2,10 @@ package com.Rotary.Meeting.controllers;
 
 
 import com.Rotary.Meeting.models.dto.ParticipantEntity;
-import com.Rotary.Meeting.models.requestDtos.GetMeetingByIdRequest;
 import com.Rotary.Meeting.models.requestDtos.GetParticipantByIdRequest;
 import com.Rotary.Meeting.models.responseDtos.GetParticipantByIdResponse;
 import com.Rotary.Meeting.services.ParticipantService;
+import com.Rotary.Meeting.services.util.QRGeneratorService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +18,7 @@ import java.util.List;
 public class ParticipantController {
 
     private final ParticipantService participantService;
+    private final QRGeneratorService qrGeneratorService;
 
     @GetMapping("/getAllParticipants")
     public List<ParticipantEntity> getAllParticipants(){
@@ -34,4 +35,12 @@ public class ParticipantController {
         participantService.saveParticipant(participant);
         return "Meeting saved succesfully";
     }
+
+    @GetMapping("/generateQrCodes")
+    public boolean generateQrCodesToFolder(){
+        this.qrGeneratorService.generateQrCodesToFolder();
+        return true;
+    }
+
+
 }
