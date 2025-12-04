@@ -3,6 +3,7 @@ package com.Rotary.Meeting.controllers;
 
 import com.Rotary.Meeting.models.dto.ParticipantEntity;
 import com.Rotary.Meeting.models.requestDtos.GetParticipantByIdRequest;
+import com.Rotary.Meeting.models.requestDtos.QrCodeByRoleIdRequest;
 import com.Rotary.Meeting.models.responseDtos.GetParticipantByIdResponse;
 import com.Rotary.Meeting.services.ParticipantService;
 import com.Rotary.Meeting.services.util.QRGeneratorService;
@@ -36,9 +37,9 @@ public class ParticipantController {
         return "Meeting saved succesfully";
     }
 
-    @GetMapping("/generateQrCodes")
-    public boolean generateQrCodesToFolder(){
-        this.qrGeneratorService.generateQrCodesToFolder();
+    @PostMapping("/generateQrCodes")
+    public boolean generateQrCodesToFolder(@RequestBody QrCodeByRoleIdRequest request){
+        this.qrGeneratorService.generateQrCodesToFolder(request);
         return true;
     }
 

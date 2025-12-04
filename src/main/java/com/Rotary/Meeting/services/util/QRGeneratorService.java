@@ -1,6 +1,7 @@
 package com.Rotary.Meeting.services.util;
 
 import com.Rotary.Meeting.models.dto.ParticipantEntity;
+import com.Rotary.Meeting.models.requestDtos.QrCodeByRoleIdRequest;
 import com.Rotary.Meeting.services.ParticipantService;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -31,10 +32,10 @@ public class QRGeneratorService {
     private static final String OUTPUT_DIR = "qr_kodlar";
 
 
-    public void generateQrCodesToFolder() {
+    public void generateQrCodesToFolder(QrCodeByRoleIdRequest request) {
         System.out.println("⏳ QR Kod Oluşturma İşlemi Başlatılıyor...");
 
-        List<ParticipantEntity> participantEntityList = participantService.getAllParticipants();
+        List<ParticipantEntity> participantEntityList = participantService.getParticipantByRRoleId(request.getId());
 
         for (ParticipantEntity participant : participantEntityList) {
             try {
@@ -90,8 +91,8 @@ public class QRGeneratorService {
      * QR koda yerleştirilecek veriyi string olarak döndürür.
      */
     public String getQrData(ParticipantEntity participant) {
-        return participant.getId().toString();
-        //return participantId + "," + meeting_id ;
+        //return participant.getId().toString();
+        return participant.getId().toString() + "," + participant.getName() + " " + participant.getSurname() ;
     }
 
     /**

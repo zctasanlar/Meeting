@@ -35,6 +35,13 @@ public class ParticipantService {
         return this.participantRepository.findAll();
     }
 
+    public List<ParticipantEntity> getParticipantByRRoleId(UUID id){
+        GetParticipantByIdResponse response = new GetParticipantByIdResponse();
+        List<ParticipantEntity> list= this.participantRepository.findAll().stream().filter(participant -> participant.getRRoleId().equals(id)).toList();
+        return list;
+
+    }
+
     @CacheEvict(value = "allParticipants", key = "#id")
     public void deleteParticipant(UUID id){
         this.participantRepository.deleteById(id);
