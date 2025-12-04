@@ -1,13 +1,16 @@
 package com.Rotary.Meeting.services;
 
 import com.Rotary.Meeting.models.dto.ParticipantEntity;
+import com.Rotary.Meeting.models.responseDtos.GetParticipantByIdResponse;
 import com.Rotary.Meeting.repositories.ParticipantRepository;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -16,8 +19,10 @@ public class ParticipantService {
 
     private final ParticipantRepository participantRepository;
 
-    public ParticipantEntity getParticipantById(UUID id){
-        return this.participantRepository.getReferenceById(id);
+    public GetParticipantByIdResponse getParticipantById(UUID id){
+        GetParticipantByIdResponse response = new GetParticipantByIdResponse();
+        this.participantRepository.findById(id).ifPresent(response::setParticipant);
+        return response;
     }
 
     @CacheEvict(value = "allParticipants", allEntries = true)

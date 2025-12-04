@@ -1,6 +1,7 @@
 package com.Rotary.Meeting.services;
 
 import com.Rotary.Meeting.models.dto.MeetingEntity;
+import com.Rotary.Meeting.models.responseDtos.GetMeetingByIdResponse;
 import com.Rotary.Meeting.repositories.MeetingRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -16,8 +17,10 @@ public class MeetingService {
 
     private final MeetingRepository meetingRepository;
 
-    public MeetingEntity getMeetingById(UUID id){
-        return this.meetingRepository.getReferenceById(id);
+    public GetMeetingByIdResponse getMeetingById(UUID id){
+        GetMeetingByIdResponse response = new GetMeetingByIdResponse();
+        this.meetingRepository.findById(id).ifPresent(response::setMeeting);
+        return response;
     }
 
     @CacheEvict(value = "allMeetings", allEntries = true)

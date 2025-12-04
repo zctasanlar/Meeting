@@ -5,6 +5,7 @@ import com.Rotary.Meeting.models.dto.RotaryRoleEntity;
 import com.Rotary.Meeting.models.dto.TracingEntity;
 import com.Rotary.Meeting.models.requestDtos.GetMeetingByIdRequest;
 import com.Rotary.Meeting.models.requestDtos.LogTransactionRequest;
+import com.Rotary.Meeting.models.responseDtos.AllTransactionsListResponse;
 import com.Rotary.Meeting.services.RotaryRoleService;
 import com.Rotary.Meeting.services.TracingService;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,7 @@ public class TracingController {
     private final TracingService tracingService;
 
     @GetMapping("/getAllTransactions")
-    public List<TracingEntity> getAllRotaryRoles(){
+    public AllTransactionsListResponse getAllTransactions(){
         return this.tracingService.getAllTransactions();
     }
 

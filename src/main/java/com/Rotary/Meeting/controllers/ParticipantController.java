@@ -4,6 +4,7 @@ package com.Rotary.Meeting.controllers;
 import com.Rotary.Meeting.models.dto.ParticipantEntity;
 import com.Rotary.Meeting.models.requestDtos.GetMeetingByIdRequest;
 import com.Rotary.Meeting.models.requestDtos.GetParticipantByIdRequest;
+import com.Rotary.Meeting.models.responseDtos.GetParticipantByIdResponse;
 import com.Rotary.Meeting.services.ParticipantService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
@@ -24,7 +25,7 @@ public class ParticipantController {
     }
 
     @PostMapping("/getParticipantById")
-    public ParticipantEntity getParticipantById(@RequestBody GetParticipantByIdRequest meeting){
+    public GetParticipantByIdResponse getParticipantById(@RequestBody GetParticipantByIdRequest meeting){
         return this.participantService.getParticipantById(meeting.getId());
     }
 
