@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.cglib.core.Local;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -25,16 +27,16 @@ public class MeetingEntity {
 
     @CreationTimestamp
     @Column(name = "created_at")
-    private Date created_at;
+    private LocalDateTime created_at;
 
     @Column(name = "name")
     private String Name;
 
     @Column(name = "start_time")
-    private Date StartTime;
+    private LocalDateTime StartTime;
 
     @Column(name = "end_time")
-    private Date EndTime;
+    private LocalDateTime EndTime;
 
     @Column(name = "rrole_id")
     private UUID RRoleId;

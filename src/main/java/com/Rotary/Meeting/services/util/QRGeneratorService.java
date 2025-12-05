@@ -91,8 +91,16 @@ public class QRGeneratorService {
      * QR koda yerleştirilecek veriyi string olarak döndürür.
      */
     public String getQrData(ParticipantEntity participant) {
-        //return participant.getId().toString();
-        return participant.getId().toString() + "," + participant.getName() + " " + participant.getSurname() ;
+        String nameSurname = participant.getName() + " " + participant.getSurname() ;
+
+        // JSON formatında string oluşturma
+        String jsonTemplate = "{\"id\": %s, \"nameSurname\": \"%s\"}";
+
+        // Ad Soyad içindeki çift tırnak (") gibi karakterlerin JSON yapısını bozmaması için
+        // escape edilmesi gerekebilir. Basitlik için sadece tırnak işaretlerini siliyoruz.
+        String safeNameSurname = nameSurname.replace("\"", "").trim();
+
+        return String.format(jsonTemplate, participant.getId().toString(), safeNameSurname);
     }
 
     /**

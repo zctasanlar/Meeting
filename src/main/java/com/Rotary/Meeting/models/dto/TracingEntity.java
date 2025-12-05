@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -24,7 +25,7 @@ public class TracingEntity {
 
     @CreationTimestamp
     @Column(name = "created_at")
-    private Date created_at;
+    private LocalDateTime created_at;
 
     @Column(name = "participant_id")
     private UUID ParticipantId;
