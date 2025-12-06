@@ -44,4 +44,11 @@ public class TracingController {
     public Map<String, Long>  hesaplaToplamIcerideKalmaSuresi(@RequestBody LogUserDurationRequest request){
         return this.tracingService.hesaplaToplamIcerideKalmaSuresi(request);
     }
+
+
+    @PostMapping("/hesaplaToplamIcerideKalmaSuresiDeneme")
+    public Map<String, Long>  hesaplaToplamIcerideKalmaSuresiDeneme(@RequestBody LogUserDurationRequest request){
+        return this.tracingService.hesaplaToplamIcerideKalmaSuresi(request);
+    }
+
 }
