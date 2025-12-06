@@ -47,7 +47,7 @@ services:
     # Ortam değişkenleri ile Watchtower'ın nasıl çalışacağını yapılandırın.
     environment:
       # Sadece bir kerelik çalıştırmak ve çıkmak yerine, sürekli izleme yapar.
-      WATCHTOWER_POLL_INTERVAL: 86400 # Saniye cinsinden (Örn: 300 saniye = 5 dakikada bir kontrol et)
+      WATCHTOWER_POLL_INTERVAL: 300 # Saniye cinsinden (Örn: 300 saniye = 5 dakikada bir kontrol et) 86400 1 gün
       # Güncelleme sırasında eski imajları silmeyi etkinleştirir.
       WATCHTOWER_CLEANUP: true
       # Watchtower'ın kendisini güncellemesini engeller (isteğe bağlı).
