@@ -10,6 +10,7 @@ import com.Rotary.Meeting.models.requestDtos.LogUserDurationRequest;
 import com.Rotary.Meeting.models.responseDtos.AllTransactionsListResponse;
 import com.Rotary.Meeting.services.RotaryRoleService;
 import com.Rotary.Meeting.services.TracingService;
+import com.Rotary.Meeting.services.util.KullaniciSure;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -45,10 +46,15 @@ public class TracingController {
         return this.tracingService.hesaplaToplamIcerideKalmaSuresi(request);
     }
 
+    @PostMapping("/calculateTotalInsideDuration")
+    public List<KullaniciSure>  calculateTotalInsideDuration(@RequestBody LogUserDurationRequest request){
+        return this.tracingService.calculateTotalInsideDuration(request);
+    }
 
-    @PostMapping("/hesaplaToplamIcerideKalmaSuresiDeneme")
-    public Map<String, Long>  hesaplaToplamIcerideKalmaSuresiDeneme(@RequestBody LogUserDurationRequest request){
-        return this.tracingService.hesaplaToplamIcerideKalmaSuresi(request);
+
+    @PostMapping("/closeActiveSessions")
+    public int  closeActiveSessions(@RequestBody GetMeetingByIdRequest request){
+        return this.tracingService.closeActiveSessions(request);
     }
 
 }
