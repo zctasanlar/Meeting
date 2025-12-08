@@ -2,6 +2,7 @@ package com.Rotary.Meeting.controllers;
 
 
 import com.Rotary.Meeting.models.dto.MeetingEntity;
+import com.Rotary.Meeting.models.requestDtos.ChangeMeetingTimeByIdRequest;
 import com.Rotary.Meeting.models.requestDtos.GetMeetingByIdRequest;
 import com.Rotary.Meeting.models.responseDtos.GetMeetingByIdResponse;
 import com.Rotary.Meeting.services.MeetingService;
@@ -27,6 +28,12 @@ public class MeetingController {
     public GetMeetingByIdResponse getMeetingById(@RequestBody GetMeetingByIdRequest meeting){
         return this.meetingService.getMeetingById(meeting.getId());
     }
+
+    @PostMapping("/changeMeetingTime")
+    public boolean changeMeetingTime(@RequestBody ChangeMeetingTimeByIdRequest request){
+        return this.meetingService.changeMeetingTime(request);
+    }
+
 
     @PostMapping("/add")
     public String addMeeting(@RequestBody MeetingEntity meeting){
