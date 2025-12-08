@@ -8,6 +8,7 @@ import com.Rotary.Meeting.models.requestDtos.LogDurationPeriodRequest;
 import com.Rotary.Meeting.models.requestDtos.LogTransactionRequest;
 import com.Rotary.Meeting.models.requestDtos.LogUserDurationRequest;
 import com.Rotary.Meeting.models.responseDtos.AllTransactionsListResponse;
+import com.Rotary.Meeting.models.responseDtos.GeneralResponse;
 import com.Rotary.Meeting.services.RotaryRoleService;
 import com.Rotary.Meeting.services.TracingService;
 import com.Rotary.Meeting.services.util.KullaniciSure;
@@ -32,7 +33,7 @@ public class TracingController {
     }
 
     @PostMapping("/logTransaction")
-    public boolean logTransaction(@RequestBody LogTransactionRequest request){
+    public GeneralResponse logTransaction(@RequestBody LogTransactionRequest request){
         return this.tracingService.logTransaction(request);
     }
 
@@ -53,7 +54,7 @@ public class TracingController {
 
 
     @PostMapping("/closeActiveSessions")
-    public int  closeActiveSessions(@RequestBody GetMeetingByIdRequest request){
+    public GeneralResponse  closeActiveSessions(@RequestBody GetMeetingByIdRequest request){
         return this.tracingService.closeActiveSessions(request);
     }
 

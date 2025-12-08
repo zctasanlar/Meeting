@@ -7,6 +7,7 @@ import com.Rotary.Meeting.models.requestDtos.LogDurationPeriodRequest;
 import com.Rotary.Meeting.models.requestDtos.LogTransactionRequest;
 import com.Rotary.Meeting.models.requestDtos.LogUserDurationRequest;
 import com.Rotary.Meeting.models.responseDtos.AllTransactionsListResponse;
+import com.Rotary.Meeting.models.responseDtos.GeneralResponse;
 import com.Rotary.Meeting.repositories.TracingRepository;
 import com.Rotary.Meeting.services.util.Durum;
 import com.Rotary.Meeting.services.util.KullaniciSure;
@@ -107,7 +108,8 @@ public class TracingService {
         return zonedDateTime.format(formatter);
     }
 
-    public boolean logTransaction(LogTransactionRequest request){
+    public GeneralResponse logTransaction(LogTransactionRequest request){
+        GeneralResponse response = new GeneralResponse();
         try{
                 TracingEntity entity = new TracingEntity();
                 entity.setId(randomUUID());
@@ -115,10 +117,11 @@ public class TracingService {
                 entity.setDirection(request.getDirection());
                 entity.setMeetingId(request.getMeeting_id());
                 this.tracingRepository.save(entity);
-                return true;
+                response.setResponse(true);
         }catch (Exception ex) {
-                return false;
+            response.setResponse(false);
         }
+        return response;
 
     }
 
@@ -454,7 +457,8 @@ public class TracingService {
      * @return Kaydı atılan ÇIKIŞ hareketlerinin sayısı.
      */
     @Transactional // Tüm işlemlerin tek bir DB işlemi (transaction) içinde yapılmasını sağlar
-    public int closeActiveSessions(GetMeetingByIdRequest request) {
+    public GeneralResponse closeActiveSessions(GetMeetingByIdRequest request) {
+        GeneralResponse response = new GeneralResponse();
         UUID meetingId = request.getId();
         // 1. Durumu GİRİŞ olan katılımcıları veritabanından bul
         // Bu sorgu, her participant_id için en son created_at'a sahip kaydın direction'ını kontrol etmelidir.
@@ -463,7 +467,8 @@ public class TracingService {
 
         if (activeParticipantIds.isEmpty()) {
             System.out.println("Bilgi: Kapatılacak aktif oturum bulunamadı.");
-            return 0;
+            response.setResponse(false);
+            return response;
         }
 
         // 2. Çıkış hareketleri listesini oluştur
@@ -494,7 +499,8 @@ public class TracingService {
         // 3. Tüm ÇIKIŞ kayıtlarını toplu olarak kaydet (Batch Save)
         tracingRepository.saveAll(exitRecordsToSave);
 
-        return exitRecordsToSave.size();
+        response.setResponse(true);
+        return response;
     }
 
     /**
