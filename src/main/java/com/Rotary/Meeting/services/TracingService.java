@@ -13,6 +13,7 @@ import com.Rotary.Meeting.services.util.Durum;
 import com.Rotary.Meeting.services.util.KullaniciSure;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
@@ -302,6 +303,8 @@ public class TracingService {
 
             // 4. Bitiş kontrolü (Mantık aynı kalır)
             if (girisZamani != null) {
+                bitisZamani = LocalDateTime.now().isBefore(bitisZamani) ? LocalDateTime.now() : bitisZamani;
+
                 Duration icerideKalinanAnlikSure = Duration.between(girisZamani, bitisZamani);
                 icerideKalmaSuresi = icerideKalmaSuresi.plus(icerideKalinanAnlikSure);
             }
