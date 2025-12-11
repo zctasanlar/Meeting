@@ -11,11 +11,8 @@ import com.Rotary.Meeting.models.responseDtos.GeneralResponse;
 import com.Rotary.Meeting.repositories.TracingRepository;
 import com.Rotary.Meeting.services.util.Durum;
 import com.Rotary.Meeting.services.util.KullaniciSure;
-import com.Rotary.Meeting.services.util.MolaAnalizServisi;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
@@ -32,13 +29,9 @@ public class TracingService {
     private final TracingRepository tracingRepository;
     private MeetingService meetingService;
     private ParticipantService participantService;
-    private MolaAnalizServisi molaAnalizServisi ;
+    //private MolaAnalizServisi molaAnalizServisi ;
 
     private Map<String, Durum> kullaniciDurumlari = new HashMap<>();
-
-    /*public TracingEntity getReferenceById(int id){
-        return this.tracingRepository.getReferenceById(id);
-    }*/
 
     public AllTransactionsListResponse getAllTransactions(){
         AllTransactionsListResponse response = new AllTransactionsListResponse();
@@ -126,9 +119,8 @@ public class TracingService {
     }
 
     public String getNameSurname(UUID participantId){
-        String nameSurname = participantService.getParticipantById(participantId).getParticipant().getName() + " " +
+        return participantService.getParticipantById(participantId).getParticipant().getName() + " " +
                 participantService.getParticipantById(participantId).getParticipant().getSurname();
-        return nameSurname;
     }
 
     /**
@@ -259,7 +251,7 @@ public class TracingService {
         LocalDateTime bitisZamani = meetingService.getMeetingById(request.getMeetingId()).getMeeting().getEndTime();
 
         // NOT: Gerçek projede veritabanı sorgusunu filtreleyerek yapmanız (yorum satırındaki gibi) daha performanslı olacaktır.
-        List<TracingEntity> hareketler = this.tracingRepository.findAll();
+        List<TracingEntity> hareketler = this.tracingRepository.findAll().stream().filter(log->log.getMeetingId().equals(request.getMeetingId())).toList();
 
         // 1. Gruplama Adımı (Aynı kalır)
         Map<UUID, List<TracingEntity>> gruplanmisHareketler = hareketler.stream()
@@ -272,6 +264,7 @@ public class TracingService {
 
         // Sonuç Listesi artık Map yerine KullaniciSure listesi olacak
         List<KullaniciSure> toplamSurelerListesi = new ArrayList<>();
+
 
         // 2. Her kullanıcı için döngü (Döngü içi mantık aynı kalır)
         for (Map.Entry<UUID, List<TracingEntity>> entry : gruplanmisHareketler.entrySet()) {
@@ -318,6 +311,7 @@ public class TracingService {
             toplamSurelerListesi.add(new KullaniciSure(kullaniciId, icerideKalmaSuresi.toMinutes()));
         }
 
+        toplamSurelerListesi.sort(Comparator.comparing(KullaniciSure::getDuration));
         return toplamSurelerListesi;
     }
 
@@ -452,9 +446,6 @@ public class TracingService {
     /**
      * Belirtilen toplantı ID'sine ait, son durumu GİRİŞ olan tüm katılımcılar için
      * ÇIKIŞ kaydı oluşturur ve kaydeder.
-     *
-
-     * @return Kaydı atılan ÇIKIŞ hareketlerinin sayısı.
      */
     @Transactional // Tüm işlemlerin tek bir DB işlemi (transaction) içinde yapılmasını sağlar
     public GeneralResponse closeActiveSessions(GetMeetingByIdRequest request) {
