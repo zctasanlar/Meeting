@@ -6,5 +6,6 @@ import java.util.UUID;
 
 @Data
 public class LogDurationPeriodRequest {
+    private UUID meetingId;
     private int maxDisaridaKalmaDakika;
 }

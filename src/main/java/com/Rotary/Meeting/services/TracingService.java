@@ -145,7 +145,8 @@ public class TracingService {
      * @return Belirlenen süredir toplantıda olmayan kullanıcıların listesi
      */
     public List<String> logMissingParticipants(LogDurationPeriodRequest request) {
-        islemHareketleri(this.tracingRepository.findAll());
+
+        islemHareketleri(this.tracingRepository.findAllByMeetingId(request.getMeetingId()));
 
         LocalDateTime kontrolZamani = LocalDateTime.now();
         List<String> kayipKullanicilar = new ArrayList<>();
@@ -252,7 +253,7 @@ public class TracingService {
         LocalDateTime bitisZamani = meetingService.getMeetingById(request.getMeetingId()).getMeeting().getEndTime();
 
         // NOT: Gerçek projede veritabanı sorgusunu filtreleyerek yapmanız (yorum satırındaki gibi) daha performanslı olacaktır.
-        List<TracingEntity> hareketler = this.tracingRepository.findAll().stream().filter(log->log.getMeetingId().equals(request.getMeetingId())).toList();
+        List<TracingEntity> hareketler = this.tracingRepository.findAllByMeetingId(request.getMeetingId());
 
         // 1. Gruplama Adımı (Aynı kalır)
         Map<UUID, List<TracingEntity>> gruplanmisHareketler = hareketler.stream()
