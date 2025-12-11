@@ -21,7 +21,7 @@ public class MeetingController {
 
     @GetMapping("/getAll")
     public List<MeetingEntity> getAllMeetings(){
-        return this.meetingService.getAllMeeting();
+        return this.meetingService.getAllMeeting().stream().filter(meetingEntity -> meetingEntity.getStatus()==1).toList();
     }
 
     @PostMapping("/getMeetingById")
