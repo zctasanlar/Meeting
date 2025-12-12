@@ -34,7 +34,7 @@ public interface TracingRepository extends JpaRepository<TracingEntity, Integer>
     // veya CTE (Common Table Expression) kullanılarak yazılabilir.
     // Ancak bu, en basit ve DB agnostic (DB'den bağımsız) SQL çözümüdür.
 
-    @Query(value = "SELECT * FROM tracing t WHERE t.meeting_id = :meetingId ", nativeQuery = true)
+    @Query(value = "SELECT * FROM tracing t WHERE t.meeting_id = :meetingId order by created_at desc limit 10", nativeQuery = true)
     List<TracingEntity> findAllByMeetingId(@Param("meetingId") UUID meetingId);
 
     /**
