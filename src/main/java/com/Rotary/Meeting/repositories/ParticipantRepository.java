@@ -77,7 +77,7 @@ public interface ParticipantRepository extends JpaRepository<ParticipantEntity, 
             "  EXISTS ( " +
             "    SELECT 1 FROM meeting m " +
             "    JOIN rotary_role rr ON m.rrole_id = rr.id " +
-            "    WHERE m.id = :meetingId AND 1=1 " +
+            "    WHERE m.id = :meetingId AND UPPER(TRIM(rr.title)) = 'ALL' " +
             "  ) " +
             "  OR " +
             "  p.rrole_id = (SELECT m2.rrole_id FROM meeting m2 WHERE m2.id = :meetingId) " +
