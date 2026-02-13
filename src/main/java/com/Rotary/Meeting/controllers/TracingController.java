@@ -50,6 +50,12 @@ public class TracingController {
         return this.tracingService.calculateTotalInsideDuration(request);
     }
 
+    //bu metodu client kullanıyor.
+    @PostMapping("/calculateTotalInsideDurationForAdmin")
+    public List<KullaniciSure>  calculateTotalInsideDurationForAdmin(@RequestBody LogUserDurationRequest request){
+        return this.tracingService.calculateTotalInsideDurationForAdmin(request);
+    }
+
 
     @PostMapping("/closeActiveSessions")
     public GeneralResponse  closeActiveSessions(@RequestBody GetMeetingByIdRequest request){

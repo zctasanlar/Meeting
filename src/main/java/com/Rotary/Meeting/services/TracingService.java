@@ -234,6 +234,79 @@ public class TracingService {
         return toplamSurelerListesi;
     }
 
+    public List<KullaniciSure> calculateTotalInsideDurationForAdmin(LogUserDurationRequest request) {
+
+        // ... (Tanımlamalar ve Gruplama/Sıralama Adımları aynı kalır)
+
+        LocalDateTime baslangicZamani = meetingService.getMeetingById(request.getMeetingId()).getMeeting().getStartTime();
+        LocalDateTime bitisZamani = meetingService.getMeetingById(request.getMeetingId()).getMeeting().getEndTime();
+
+        // NOT: Gerçek projede veritabanı sorgusunu filtreleyerek yapmanız (yorum satırındaki gibi) daha performanslı olacaktır.
+        List<TracingEntity> hareketler = this.tracingRepository.findAllByMeetingId(request.getMeetingId());
+
+        // 1. Gruplama Adımı (Aynı kalır)
+        Map<UUID, List<TracingEntity>> gruplanmisHareketler = hareketler.stream()
+                .collect(Collectors.groupingBy(TracingEntity::getParticipantId));
+
+        // 2. Sıralama Adımı (Aynı kalır)
+        gruplanmisHareketler.values().forEach(list ->
+                list.sort(Comparator.comparing(TracingEntity::getCreated_at))
+        );
+
+        // Sonuç Listesi artık Map yerine KullaniciSure listesi olacak
+        List<KullaniciSure> toplamSurelerListesi = new ArrayList<>();
+
+
+        // 2. Her kullanıcı için döngü (Döngü içi mantık aynı kalır)
+        for (Map.Entry<UUID, List<TracingEntity>> entry : gruplanmisHareketler.entrySet()) {
+            String kullaniciId = getNameSurname(entry.getKey());
+
+            List<TracingEntity> kullaniciHareketleri = entry.getValue();
+            Duration icerideKalmaSuresi = Duration.ZERO;
+            LocalDateTime girisZamani = null;
+
+            // 3. Kullanıcının hareketlerini işle (Mantık aynı kalır)
+            for (TracingEntity hareket : kullaniciHareketleri) {
+                LocalDateTime hareketZamani = hareket.getCreated_at();
+
+                String yon = (hareket.getDirection() == 1) ? "GİRİŞ" : "ÇIKIŞ";
+
+                if (hareketZamani.isBefore(baslangicZamani) || hareketZamani.isAfter(bitisZamani)) {
+                    continue;
+                }
+
+                if (yon.equals("GİRİŞ")) {
+                    if (girisZamani == null) {
+                        girisZamani = hareketZamani.isAfter(baslangicZamani) ? hareketZamani : baslangicZamani;
+                    }
+                } else if (yon.equals("ÇIKIŞ")) {
+                    if (girisZamani != null) {
+                        LocalDateTime cikisZamani = hareketZamani.isBefore(bitisZamani) ? hareketZamani : bitisZamani;
+
+                        Duration icerideKalinanAnlikSure = Duration.between(girisZamani, cikisZamani);
+                        icerideKalmaSuresi = icerideKalmaSuresi.plus(icerideKalinanAnlikSure);
+
+                        girisZamani = null;
+                    }
+                }
+            }
+
+            // 4. Bitiş kontrolü (Mantık aynı kalır)
+            if (girisZamani != null) {
+                bitisZamani = LocalDateTime.now().isBefore(bitisZamani) ? LocalDateTime.now() : bitisZamani;
+
+                Duration icerideKalinanAnlikSure = Duration.between(girisZamani, bitisZamani);
+                icerideKalmaSuresi = icerideKalmaSuresi.plus(icerideKalinanAnlikSure);
+            }
+
+            // Sonucu Listeye Ekleme
+            // KullaniciSure nesnesi oluşturulur ve Listeye eklenir
+            toplamSurelerListesi.add(new KullaniciSure(kullaniciId, icerideKalmaSuresi.toMinutes()));
+        }
+
+        toplamSurelerListesi.sort(Comparator.comparing(KullaniciSure::getDuration));
+        return toplamSurelerListesi;
+    }
 
 
     /**
