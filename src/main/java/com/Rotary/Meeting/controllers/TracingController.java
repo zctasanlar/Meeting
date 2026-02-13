@@ -3,10 +3,7 @@ package com.Rotary.Meeting.controllers;
 
 import com.Rotary.Meeting.models.dto.RotaryRoleEntity;
 import com.Rotary.Meeting.models.dto.TracingEntity;
-import com.Rotary.Meeting.models.requestDtos.GetMeetingByIdRequest;
-import com.Rotary.Meeting.models.requestDtos.LogDurationPeriodRequest;
-import com.Rotary.Meeting.models.requestDtos.LogTransactionRequest;
-import com.Rotary.Meeting.models.requestDtos.LogUserDurationRequest;
+import com.Rotary.Meeting.models.requestDtos.*;
 import com.Rotary.Meeting.models.responseDtos.AllTransactionsListResponse;
 import com.Rotary.Meeting.models.responseDtos.GeneralResponse;
 import com.Rotary.Meeting.services.RotaryRoleService;
@@ -42,11 +39,12 @@ public class TracingController {
         return this.tracingService.logMissingParticipants(request);
     }
 
-    @PostMapping("/hesaplaToplamIcerideKalmaSuresi")
-    public Map<String, Long>  hesaplaToplamIcerideKalmaSuresi(@RequestBody LogUserDurationRequest request){
-        return this.tracingService.hesaplaToplamIcerideKalmaSuresi(request);
+    @PostMapping("/countCurrentUsers")
+    public Long countCurrentUsers(@RequestBody CountCurrentUserRequest request){
+        return this.tracingService.countCurrentUsers(request);
     }
 
+    //bu metodu client kullanıyor.
     @PostMapping("/calculateTotalInsideDuration")
     public List<KullaniciSure>  calculateTotalInsideDuration(@RequestBody LogUserDurationRequest request){
         return this.tracingService.calculateTotalInsideDuration(request);

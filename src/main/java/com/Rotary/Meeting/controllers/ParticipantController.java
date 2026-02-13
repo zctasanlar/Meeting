@@ -2,6 +2,7 @@ package com.Rotary.Meeting.controllers;
 
 
 import com.Rotary.Meeting.models.dto.ParticipantEntity;
+import com.Rotary.Meeting.models.requestDtos.GetAbsentParticipantByMeetingIdRequest;
 import com.Rotary.Meeting.models.requestDtos.GetParticipantByIdRequest;
 import com.Rotary.Meeting.models.requestDtos.QrCodeByRoleIdRequest;
 import com.Rotary.Meeting.models.responseDtos.GetParticipantByIdResponse;
@@ -24,6 +25,16 @@ public class ParticipantController {
     @GetMapping("/getAllParticipants")
     public List<ParticipantEntity> getAllParticipants(){
         return this.participantService.getAllParticipants();
+    }
+
+    @PostMapping("/findAbsentParticipants")
+    public List<ParticipantEntity> findAbsentParticipants(GetAbsentParticipantByMeetingIdRequest request){
+        return this.participantService.findAbsentParticipants(request.getId());
+    }
+
+    @PostMapping("/findUsersNotPresentInLastTenMinutes")
+    public List<ParticipantEntity> findUsersNotPresentInLastTenMinutes(GetAbsentParticipantByMeetingIdRequest request){
+        return this.participantService.findUsersNotPresentInLastTenMinutes(request.getId());
     }
 
     @PostMapping("/getParticipantById")

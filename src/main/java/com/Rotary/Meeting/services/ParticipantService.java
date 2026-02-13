@@ -9,6 +9,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,6 +37,25 @@ public class ParticipantService {
     public List<ParticipantEntity> getAllParticipants(){
         return this.participantRepository.findAll();
     }
+
+    public List<ParticipantEntity> findAbsentParticipants(UUID id){
+        return this.participantRepository.findAbsentParticipants(id);
+    }
+
+    public List<ParticipantEntity> findUsersNotPresentInLastTenMinutes(UUID meetingId) {
+        // 1. UTC+3 olan şu anki zamanı al
+        ZonedDateTime simdiYerel = ZonedDateTime.now(ZoneId.of("Europe/Istanbul"));
+
+        // 2. Bunu UTC'ye (0) çevir ve 10 dakika çıkar
+        LocalDateTime utcSifirOnDakikaOnce = simdiYerel
+                .withZoneSameInstant(ZoneId.of("UTC")) // Saat farkını koruyarak UTC'ye çek
+                .minusMinutes(10)                      // 10 dakikayı çıkar
+                .toLocalDateTime();                    // Repository'nin beklediği tipe çevir
+
+        // 3. Repository'ye gönder
+        return participantRepository.findUsersNotPresentInLastTenMinutes(meetingId, utcSifirOnDakikaOnce);
+    }
+
 
     public List<ParticipantEntity> getParticipantByRRoleId(UUID id){
         GetParticipantByIdResponse response = new GetParticipantByIdResponse();
