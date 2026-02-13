@@ -308,6 +308,78 @@ public class TracingService {
         return toplamSurelerListesi;
     }
 
+    public List<KullaniciSure> findUsersNotPresentInLastTenMinutes(GetAbsentParticipantByMeetingIdRequest request) {
+
+
+
+        // 1. Toplantı bilgilerini ve hareketleri al
+        var meetingDetail = meetingService.getMeetingById(request.getMeetingId()).getMeeting();
+        LocalDateTime baslangicZamani = meetingDetail.getStartTime();
+        LocalDateTime bitisZamani = meetingDetail.getEndTime();
+
+        // DB UTC-0 olduğu için karşılaştırma vaktini de UTC-0 alıyoruz
+        LocalDateTime suAnUTC = LocalDateTime.now(ZoneOffset.UTC);
+        LocalDateTime onDakikaOnceUTC = suAnUTC.minusMinutes(request.getDuration());
+
+        // Eğer toplantı henüz bitmediyse, süre hesaplama üst sınırı "şimdi" olmalı
+        LocalDateTime hesaplamaBitisSiniri = suAnUTC.isBefore(bitisZamani) ? suAnUTC : bitisZamani;
+
+        List<TracingEntity> hareketler = this.tracingRepository.findAllByMeetingId(request.getMeetingId());
+
+        // 2. Kullanıcı bazlı gruplama
+        Map<UUID, List<TracingEntity>> gruplanmisHareketler = hareketler.stream()
+                .collect(Collectors.groupingBy(TracingEntity::getParticipantId));
+
+        List<KullaniciSure> pasifKullanicilarListesi = new ArrayList<>();
+
+        for (Map.Entry<UUID, List<TracingEntity>> entry : gruplanmisHareketler.entrySet()) {
+            List<TracingEntity> kullaniciHareketleri = entry.getValue();
+            kullaniciHareketleri.sort(Comparator.comparing(TracingEntity::getCreated_at));
+
+            // --- AKTİFLİK KONTROLÜ (Son 10 Dakika) ---
+            TracingEntity sonHareket = kullaniciHareketleri.get(kullaniciHareketleri.size() - 1);
+            boolean icerideDegil = (sonHareket.getDirection() == 0) ||
+                    (sonHareket.getDirection() == 1 && sonHareket.getCreated_at().isBefore(onDakikaOnceUTC));
+
+            // Eğer kullanıcı son 10 dakikadır pasifse, süresini hesapla ve listeye ekle
+            if (icerideDegil) {
+                Duration toplamIcerideSuresi = Duration.ZERO;
+                LocalDateTime girisZamani = null;
+
+                // --- SÜRE HESAPLAMA MANTIĞI (Senin metodundaki mantık) ---
+                for (TracingEntity hareket : kullaniciHareketleri) {
+                    LocalDateTime hareketZamani = hareket.getCreated_at();
+
+                    if (hareketZamani.isBefore(baslangicZamani) || hareketZamani.isAfter(bitisZamani)) continue;
+
+                    if (hareket.getDirection() == 1) { // GİRİŞ
+                        if (girisZamani == null) {
+                            girisZamani = hareketZamani.isAfter(baslangicZamani) ? hareketZamani : baslangicZamani;
+                        }
+                    } else if (hareket.getDirection() == 0) { // ÇIKIŞ
+                        if (girisZamani != null) {
+                            LocalDateTime cikisZamani = hareketZamani.isBefore(bitisZamani) ? hareketZamani : bitisZamani;
+                            toplamIcerideSuresi = toplamIcerideSuresi.plus(Duration.between(girisZamani, cikisZamani));
+                            girisZamani = null;
+                        }
+                    }
+                }
+
+                // Hala içeride görünüyorsa (ama pasifse), hesaplama sınırına kadar olan süreyi ekle
+                if (girisZamani != null) {
+                    toplamIcerideSuresi = toplamIcerideSuresi.plus(Duration.between(girisZamani, hesaplamaBitisSiniri));
+                }
+
+                // KullaniciSure objesine ata (name ve duration alanları ile)
+                String adSoyad = getNameSurname(entry.getKey());
+                pasifKullanicilarListesi.add(new KullaniciSure(adSoyad, toplamIcerideSuresi.toMinutes()));
+            }
+        }
+
+        // İsme göre alfabetik sıralama
+        pasifKullanicilarListesi.sort(Comparator.comparing(KullaniciSure::getName));
+        return pasifKullanicilarListesi;
+    }
 
     /**
      * Belirtilen toplantı ID'sine ait, son durumu GİRİŞ olan tüm katılımcılar için
@@ -316,7 +388,7 @@ public class TracingService {
     @Transactional // Tüm işlemlerin tek bir DB işlemi (transaction) içinde yapılmasını sağlar
     public GeneralResponse closeActiveSessions(GetMeetingByIdRequest request) {
         GeneralResponse response = new GeneralResponse();
-        UUID meetingId = request.getId();
+        UUID meetingId = request.getMeetingId();
         // 1. Durumu GİRİŞ olan katılımcıları veritabanından bul
         // Bu sorgu, her participant_id için en son created_at'a sahip kaydın direction'ını kontrol etmelidir.
         // tracingRepository.findParticipantsWithLatestDirection(meetingId, DIRECTION_ENTRY) metodu aşağıda açıklanmıştır.

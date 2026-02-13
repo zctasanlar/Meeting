@@ -6,5 +6,5 @@ import java.util.UUID;
 
 @Data
 public class GetMeetingByIdRequest {
-    private UUID id;
+    private UUID meetingId;
 }

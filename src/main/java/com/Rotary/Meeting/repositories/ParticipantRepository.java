@@ -72,13 +72,12 @@ public interface ParticipantRepository extends JpaRepository<ParticipantEntity, 
             @Param("checkTime") LocalDateTime checkTime
     ); */
 
-
     @Query(value = "SELECT DISTINCT p.* FROM participant p " +
-            "WHERE ( " +
+            "WHERE p.identity_number <> '22' AND ( " +
             "  EXISTS ( " +
             "    SELECT 1 FROM meeting m " +
             "    JOIN rotary_role rr ON m.rrole_id = rr.id " +
-            "    WHERE m.id = :meetingId AND rr.title = 'ALL' " +
+            "    WHERE m.id = :meetingId AND 1=1 " +
             "  ) " +
             "  OR " +
             "  p.rrole_id = (SELECT m2.rrole_id FROM meeting m2 WHERE m2.id = :meetingId) " +
@@ -91,31 +90,15 @@ public interface ParticipantRepository extends JpaRepository<ParticipantEntity, 
     List<ParticipantEntity> findAbsentParticipants(@Param("meetingId") UUID meetingId);
 
     @Query(value = "SELECT DISTINCT p.* FROM participant p " +
-            "WHERE ( " +
-            "  EXISTS ( " +
-            "    SELECT 1 FROM meeting m " +
-            "    JOIN rotary_role rr ON m.rrole_id = rr.id " +
-            "    WHERE m.id = :meetingId AND rr.title = 'ALL' " +
-            "  ) " +
-            "  OR " +
-            "  p.rrole_id = (SELECT m2.rrole_id FROM meeting m2 WHERE m2.id = :meetingId) " +
-            ") " +
-            "AND ( " +
-            "  NOT EXISTS ( " +
-            "    SELECT 1 FROM tracing t " +
-            "    WHERE t.participant_id = p.id AND t.meeting_id = :meetingId " +
-            "  ) " +
-            "  OR " +
-            "  p.id IN ( " +
+            "WHERE p.id IN ( " +
             "    SELECT sub.participant_id FROM ( " +
-            "      SELECT DISTINCT ON (participant_id) participant_id, direction, created_at " +
-            "      FROM tracing " +
-            "      WHERE meeting_id = :meetingId " +
-            "      ORDER BY participant_id, created_at DESC " +
+            "        SELECT DISTINCT ON (participant_id) participant_id, direction, created_at " +
+            "        FROM tracing " +
+            "        WHERE meeting_id = :meetingId " +
+            "        ORDER BY participant_id, created_at DESC " +
             "    ) sub " +
             "    WHERE sub.direction = 0 " +
-            "    OR sub.created_at < :checkTime " +
-            "  ) " +
+            "    AND sub.created_at < :checkTime " +
             ") " +
             "ORDER BY p.name ASC, p.surname ASC", nativeQuery = true)
     List<ParticipantEntity> findUsersNotPresentInLastTenMinutes(

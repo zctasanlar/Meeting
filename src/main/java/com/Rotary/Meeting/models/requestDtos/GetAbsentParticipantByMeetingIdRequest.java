@@ -6,5 +6,7 @@ import java.util.UUID;
 
 @Data
 public class GetAbsentParticipantByMeetingIdRequest {
-    private UUID id;
+    private UUID meetingId;
+    private int duration;
+
 }

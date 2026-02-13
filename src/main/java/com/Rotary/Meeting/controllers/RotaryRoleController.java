@@ -26,6 +26,6 @@ public class RotaryRoleController {
 
     @PostMapping("/getRotaryRoleById")
     public RotaryRoleEntity getMeetingById(@RequestBody GetMeetingByIdRequest meeting){
-        return this.rotaryRoleService.getParticipantById(meeting.getId());
+        return this.rotaryRoleService.getParticipantById(meeting.getMeetingId());
     }
 }

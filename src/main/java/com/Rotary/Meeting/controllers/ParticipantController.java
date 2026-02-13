@@ -28,13 +28,15 @@ public class ParticipantController {
     }
 
     @PostMapping("/findAbsentParticipants")
-    public List<ParticipantEntity> findAbsentParticipants(GetAbsentParticipantByMeetingIdRequest request){
-        return this.participantService.findAbsentParticipants(request.getId());
+    public List<ParticipantEntity> findAbsentParticipants(@RequestBody GetAbsentParticipantByMeetingIdRequest request){
+        List<ParticipantEntity> respList = this.participantService.findAbsentParticipants(request.getMeetingId());
+        return respList;
     }
 
     @PostMapping("/findUsersNotPresentInLastTenMinutes")
-    public List<ParticipantEntity> findUsersNotPresentInLastTenMinutes(GetAbsentParticipantByMeetingIdRequest request){
-        return this.participantService.findUsersNotPresentInLastTenMinutes(request.getId());
+    public List<ParticipantEntity> findUsersNotPresentInLastTenMinutes(@RequestBody GetAbsentParticipantByMeetingIdRequest request){
+        List<ParticipantEntity> respList = this.participantService.findUsersNotPresentInLastTenMinutes(request);
+        return respList;
     }
 
     @PostMapping("/getParticipantById")

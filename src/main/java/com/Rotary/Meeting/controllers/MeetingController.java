@@ -26,7 +26,7 @@ public class MeetingController {
 
     @PostMapping("/getMeetingById")
     public GetMeetingByIdResponse getMeetingById(@RequestBody GetMeetingByIdRequest meeting){
-        return this.meetingService.getMeetingById(meeting.getId());
+        return this.meetingService.getMeetingById(meeting.getMeetingId());
     }
 
     @PostMapping("/changeMeetingTime")

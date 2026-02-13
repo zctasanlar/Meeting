@@ -1,6 +1,7 @@
 package com.Rotary.Meeting.services;
 
 import com.Rotary.Meeting.models.dto.ParticipantEntity;
+import com.Rotary.Meeting.models.requestDtos.GetAbsentParticipantByMeetingIdRequest;
 import com.Rotary.Meeting.models.responseDtos.GetParticipantByIdResponse;
 import com.Rotary.Meeting.repositories.ParticipantRepository;
 import lombok.AllArgsConstructor;
@@ -42,18 +43,20 @@ public class ParticipantService {
         return this.participantRepository.findAbsentParticipants(id);
     }
 
-    public List<ParticipantEntity> findUsersNotPresentInLastTenMinutes(UUID meetingId) {
+    public List<ParticipantEntity> findUsersNotPresentInLastTenMinutes(GetAbsentParticipantByMeetingIdRequest request) {
         // 1. UTC+3 olan şu anki zamanı al
         ZonedDateTime simdiYerel = ZonedDateTime.now(ZoneId.of("Europe/Istanbul"));
 
         // 2. Bunu UTC'ye (0) çevir ve 10 dakika çıkar
         LocalDateTime utcSifirOnDakikaOnce = simdiYerel
                 .withZoneSameInstant(ZoneId.of("UTC")) // Saat farkını koruyarak UTC'ye çek
-                .minusMinutes(10)                      // 10 dakikayı çıkar
+                .minusMinutes(request.getDuration())                      // 10 dakikayı çıkar
                 .toLocalDateTime();                    // Repository'nin beklediği tipe çevir
 
+        System.out.println(utcSifirOnDakikaOnce);
+        System.out.println(simdiYerel);
         // 3. Repository'ye gönder
-        return participantRepository.findUsersNotPresentInLastTenMinutes(meetingId, utcSifirOnDakikaOnce);
+        return participantRepository.findUsersNotPresentInLastTenMinutes(request.getMeetingId(), utcSifirOnDakikaOnce);
     }
 
 

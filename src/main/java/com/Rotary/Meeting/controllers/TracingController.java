@@ -1,6 +1,7 @@
 package com.Rotary.Meeting.controllers;
 
 
+import com.Rotary.Meeting.models.dto.ParticipantEntity;
 import com.Rotary.Meeting.models.dto.RotaryRoleEntity;
 import com.Rotary.Meeting.models.dto.TracingEntity;
 import com.Rotary.Meeting.models.requestDtos.*;
@@ -56,6 +57,10 @@ public class TracingController {
         return this.tracingService.calculateTotalInsideDurationForAdmin(request);
     }
 
+    @PostMapping("/findUsersNotPresentInLastTenMinutes")
+    public List<KullaniciSure> findUsersNotPresentInLastTenMinutes(@RequestBody GetAbsentParticipantByMeetingIdRequest request){
+        return this.tracingService.findUsersNotPresentInLastTenMinutes(request);
+    }
 
     @PostMapping("/closeActiveSessions")
     public GeneralResponse  closeActiveSessions(@RequestBody GetMeetingByIdRequest request){
