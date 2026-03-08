@@ -1,13 +1,9 @@
 package com.Rotary.Meeting.controllers;
 
 
-import com.Rotary.Meeting.models.dto.ParticipantEntity;
-import com.Rotary.Meeting.models.dto.RotaryRoleEntity;
-import com.Rotary.Meeting.models.dto.TracingEntity;
 import com.Rotary.Meeting.models.requestDtos.*;
 import com.Rotary.Meeting.models.responseDtos.AllTransactionsListResponse;
 import com.Rotary.Meeting.models.responseDtos.GeneralResponse;
-import com.Rotary.Meeting.services.RotaryRoleService;
 import com.Rotary.Meeting.services.TracingService;
 import com.Rotary.Meeting.services.util.KullaniciSure;
 import lombok.AllArgsConstructor;
@@ -33,6 +29,11 @@ public class TracingController {
     @PostMapping("/logTransaction")
     public GeneralResponse logTransaction(@RequestBody LogTransactionRequest request){
         return this.tracingService.logTransaction(request);
+    }
+
+    @PostMapping("/logTransactionWithTimestamp")
+    public GeneralResponse logTransactionWithTimestamp(@RequestBody LogTransactionWithTimestampRequest request){
+        return this.tracingService.logTransactionWithTimestamp(request);
     }
 
     @PostMapping("/logMissingParticipants")

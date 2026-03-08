@@ -101,6 +101,31 @@ public class TracingService {
 
     }
 
+    public GeneralResponse logTransactionWithTimestamp(LogTransactionWithTimestampRequest request){
+        GeneralResponse response = new GeneralResponse();
+        try{
+            TracingEntity entity = new TracingEntity();
+            entity.setId(randomUUID());
+            entity.setParticipantId(request.getParticipant_id());
+            entity.setDirection(request.getDirection());
+            entity.setMeetingId(request.getMeeting_id());
+            LocalDateTime localDateTime = LocalDateTime.ofInstant(
+                    Instant.ofEpochSecond(Long.parseLong(request.getCreated_at())),
+                    ZoneId.of("Europe/Istanbul")
+            );
+            entity.setCreated_at(localDateTime);
+            this.tracingRepository.save(entity);
+            response.setResponse(true);
+        }catch (Exception ex) {
+            response.setResponse(false);
+        }
+        return response;
+
+    }
+
+
+
+
     public String getNameSurname(UUID participantId){
         return participantService.getParticipantById(participantId).getParticipant().getName() + " " +
                 participantService.getParticipantById(participantId).getParticipant().getSurname();
