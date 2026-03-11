@@ -1,7 +1,6 @@
 package com.Rotary.Meeting.services;
 
-import com.Rotary.Meeting.models.dto.TracingEntity;
-import com.Rotary.Meeting.models.dto.Transaction;
+import com.Rotary.Meeting.models.dto.*;
 import com.Rotary.Meeting.models.requestDtos.*;
 import com.Rotary.Meeting.models.responseDtos.AllTransactionsListResponse;
 import com.Rotary.Meeting.models.responseDtos.GeneralResponse;
@@ -27,6 +26,7 @@ public class TracingService {
     private final TracingRepository tracingRepository;
     private MeetingService meetingService;
     private ParticipantService participantService;
+    private RotaryRoleService rroleService;
     //private MolaAnalizServisi molaAnalizServisi ;
 
     private Map<String, Durum> kullaniciDurumlari = new HashMap<>();
@@ -86,7 +86,10 @@ public class TracingService {
 
     public GeneralResponse logTransaction(LogTransactionRequest request){
         GeneralResponse response = new GeneralResponse();
+
         try{
+
+
                 TracingEntity entity = new TracingEntity();
                 entity.setId(randomUUID());
                 entity.setParticipantId(request.getParticipant_id());
@@ -94,6 +97,15 @@ public class TracingService {
                 entity.setMeetingId(request.getMeeting_id());
                 this.tracingRepository.save(entity);
                 response.setResponse(true);
+
+            MeetingEntity meeting = meetingService.getMeetingById(request.getMeeting_id()).getMeeting();
+            ParticipantEntity participant = participantService.getParticipantById(request.getParticipant_id()).getParticipant();
+
+            if(!rroleService.getParticipantById(meeting.getRRoleId()).getTitle().equalsIgnoreCase("ALL")
+                    && !participant.getRRoleId().equals(meeting.getRRoleId()))
+                    response.setResponse(false);
+
+
         }catch (Exception ex) {
             response.setResponse(false);
         }
