@@ -138,6 +138,7 @@ public class TracingService {
             MeetingEntity meeting = meetingService.getMeetingById(request.getMeeting_id()).getMeeting();
             System.out.println("logTransactionWithTimestamp meeting -- " + meeting.getRRoleId());
             ParticipantEntity participant = participantService.getParticipantById(request.getParticipant_id()).getParticipant();
+            System.out.println("logTransactionWithTimestamp getParticipant_id -- " + request.getParticipant_id());
             System.out.println("logTransactionWithTimestamp participant -- " + participant.getRRoleId());
             System.out.println("logTransactionWithTimestamp zct -- " + !rroleService.getParticipantById(meeting.getRRoleId()).getTitle().equalsIgnoreCase("ALL"));
 
