@@ -134,6 +134,17 @@ public class TracingService {
             entity.setCreated_at(localDateTime);
             this.tracingRepository.save(entity);
             response.setResponse(true);
+
+            MeetingEntity meeting = meetingService.getMeetingById(request.getMeeting_id()).getMeeting();
+            System.out.println("logTransactionWithTimestamp meeting -- " + meeting.getRRoleId());
+            ParticipantEntity participant = participantService.getParticipantById(request.getParticipant_id()).getParticipant();
+            System.out.println("logTransactionWithTimestamp participant -- " + participant.getRRoleId());
+            System.out.println("logTransactionWithTimestamp zct -- " + !rroleService.getParticipantById(meeting.getRRoleId()).getTitle().equalsIgnoreCase("ALL"));
+
+            if(!rroleService.getParticipantById(meeting.getRRoleId()).getTitle().equalsIgnoreCase("ALL")
+                    && !participant.getRRoleId().equals(meeting.getRRoleId()))
+                response.setResponse(false);
+
         }catch (Exception ex) {
             response.setResponse(false);
         }
