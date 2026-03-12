@@ -88,8 +88,6 @@ public class TracingService {
         GeneralResponse response = new GeneralResponse();
 
         try{
-
-
                 TracingEntity entity = new TracingEntity();
                 entity.setId(randomUUID());
                 entity.setParticipantId(request.getParticipant_id());
@@ -99,11 +97,7 @@ public class TracingService {
                 response.setResponse(true);
 
             MeetingEntity meeting = meetingService.getMeetingById(request.getMeeting_id()).getMeeting();
-            System.out.println("logTransaction meeting -- " + meeting.getRRoleId());
             ParticipantEntity participant = participantService.getParticipantById(request.getParticipant_id()).getParticipant();
-            System.out.println("logTransaction participant -- " + participant.getRRoleId());
-            System.out.println("logTransaction zct -- " + !rroleService.getParticipantById(meeting.getRRoleId()).getTitle().equalsIgnoreCase("ALL"));
-
             if(!rroleService.getParticipantById(meeting.getRRoleId()).getTitle().equalsIgnoreCase("ALL")
                     && !participant.getRRoleId().equals(meeting.getRRoleId()))
                     response.setResponse(false);
@@ -112,9 +106,6 @@ public class TracingService {
         }catch (Exception ex) {
             response.setResponse(false);
         }
-        System.out.println("logTransaction zct -- resp " + response.isResponse());
-        System.out.println("logTransaction zct -- resp " + response);
-
         return response;
 
     }
@@ -136,12 +127,7 @@ public class TracingService {
             response.setResponse(true);
 
             MeetingEntity meeting = meetingService.getMeetingById(request.getMeeting_id()).getMeeting();
-            System.out.println("logTransactionWithTimestamp meeting -- " + meeting.getRRoleId());
             ParticipantEntity participant = participantService.getParticipantById(request.getParticipant_id()).getParticipant();
-            System.out.println("logTransactionWithTimestamp getParticipant_id -- " + request.getParticipant_id());
-            System.out.println("logTransactionWithTimestamp participant -- " + participant.getRRoleId());
-            System.out.println("logTransactionWithTimestamp zct -- " + !rroleService.getParticipantById(meeting.getRRoleId()).getTitle().equalsIgnoreCase("ALL"));
-
             if(!rroleService.getParticipantById(meeting.getRRoleId()).getTitle().equalsIgnoreCase("ALL")
                     && !participant.getRRoleId().equals(meeting.getRRoleId()))
                 response.setResponse(false);
@@ -149,7 +135,7 @@ public class TracingService {
         }catch (Exception ex) {
             response.setResponse(false);
         }
-        System.out.println("logTransactionWithTimestamp zct -- resp " + response);
+
         return response;
 
     }
