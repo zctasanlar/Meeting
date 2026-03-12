@@ -99,7 +99,10 @@ public class TracingService {
                 response.setResponse(true);
 
             MeetingEntity meeting = meetingService.getMeetingById(request.getMeeting_id()).getMeeting();
+            System.out.println("logTransaction meeting -- " + meeting.getRRoleId());
             ParticipantEntity participant = participantService.getParticipantById(request.getParticipant_id()).getParticipant();
+            System.out.println("logTransaction participant -- " + participant.getRRoleId());
+            System.out.println("logTransaction zct -- " + !rroleService.getParticipantById(meeting.getRRoleId()).getTitle().equalsIgnoreCase("ALL"));
 
             if(!rroleService.getParticipantById(meeting.getRRoleId()).getTitle().equalsIgnoreCase("ALL")
                     && !participant.getRRoleId().equals(meeting.getRRoleId()))
@@ -109,6 +112,9 @@ public class TracingService {
         }catch (Exception ex) {
             response.setResponse(false);
         }
+        System.out.println("logTransaction zct -- resp " + response.isResponse());
+        System.out.println("logTransaction zct -- resp " + response);
+
         return response;
 
     }
@@ -131,6 +137,7 @@ public class TracingService {
         }catch (Exception ex) {
             response.setResponse(false);
         }
+        System.out.println("logTransactionWithTimestamp zct -- resp " + response);
         return response;
 
     }
