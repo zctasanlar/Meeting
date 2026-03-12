@@ -88,6 +88,14 @@ public class TracingService {
         GeneralResponse response = new GeneralResponse();
 
         try{
+            MeetingEntity meeting = meetingService.getMeetingById(request.getMeeting_id()).getMeeting();
+            ParticipantEntity participant = participantService.getParticipantById(request.getParticipant_id()).getParticipant();
+            if(!rroleService.getParticipantById(meeting.getRRoleId()).getTitle().equalsIgnoreCase("ALL")
+                    && !participant.getRRoleId().equals(meeting.getRRoleId())){
+                response.setResponse(false);
+                return response;
+            }
+
                 TracingEntity entity = new TracingEntity();
                 entity.setId(randomUUID());
                 entity.setParticipantId(request.getParticipant_id());
@@ -95,13 +103,6 @@ public class TracingService {
                 entity.setMeetingId(request.getMeeting_id());
                 this.tracingRepository.save(entity);
                 response.setResponse(true);
-
-            MeetingEntity meeting = meetingService.getMeetingById(request.getMeeting_id()).getMeeting();
-            ParticipantEntity participant = participantService.getParticipantById(request.getParticipant_id()).getParticipant();
-            if(!rroleService.getParticipantById(meeting.getRRoleId()).getTitle().equalsIgnoreCase("ALL")
-                    && !participant.getRRoleId().equals(meeting.getRRoleId()))
-                    response.setResponse(false);
-
 
         }catch (Exception ex) {
             response.setResponse(false);
@@ -113,6 +114,14 @@ public class TracingService {
     public GeneralResponse logTransactionWithTimestamp(LogTransactionWithTimestampRequest request){
         GeneralResponse response = new GeneralResponse();
         try{
+            MeetingEntity meeting = meetingService.getMeetingById(request.getMeeting_id()).getMeeting();
+            ParticipantEntity participant = participantService.getParticipantById(request.getParticipant_id()).getParticipant();
+            if(!rroleService.getParticipantById(meeting.getRRoleId()).getTitle().equalsIgnoreCase("ALL")
+                    && !participant.getRRoleId().equals(meeting.getRRoleId())){
+                response.setResponse(false);
+                return response;
+            }
+
             TracingEntity entity = new TracingEntity();
             entity.setId(randomUUID());
             entity.setParticipantId(request.getParticipant_id());
@@ -125,12 +134,6 @@ public class TracingService {
             entity.setCreated_at(localDateTime);
             this.tracingRepository.save(entity);
             response.setResponse(true);
-
-            MeetingEntity meeting = meetingService.getMeetingById(request.getMeeting_id()).getMeeting();
-            ParticipantEntity participant = participantService.getParticipantById(request.getParticipant_id()).getParticipant();
-            if(!rroleService.getParticipantById(meeting.getRRoleId()).getTitle().equalsIgnoreCase("ALL")
-                    && !participant.getRRoleId().equals(meeting.getRRoleId()))
-                response.setResponse(false);
 
         }catch (Exception ex) {
             response.setResponse(false);
