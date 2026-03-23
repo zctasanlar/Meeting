@@ -88,13 +88,15 @@ public class TracingService {
         GeneralResponse response = new GeneralResponse();
 
         try{
-            MeetingEntity meeting = meetingService.getMeetingById(request.getMeeting_id()).getMeeting();
+            /*MeetingEntity meeting = meetingService.getMeetingById(request.getMeeting_id()).getMeeting();
             ParticipantEntity participant = participantService.getParticipantById(request.getParticipant_id()).getParticipant();
             if(!rroleService.getParticipantById(meeting.getRRoleId()).getTitle().equalsIgnoreCase("ALL")
                     && !participant.getRRoleId().equals(meeting.getRRoleId())){
                 response.setResponse(false);
                 return response;
             }
+
+             */
 
                 TracingEntity entity = new TracingEntity();
                 entity.setId(randomUUID());
@@ -114,13 +116,15 @@ public class TracingService {
     public GeneralResponse logTransactionWithTimestamp(LogTransactionWithTimestampRequest request){
         GeneralResponse response = new GeneralResponse();
         try{
-            MeetingEntity meeting = meetingService.getMeetingById(request.getMeeting_id()).getMeeting();
+            /*MeetingEntity meeting = meetingService.getMeetingById(request.getMeeting_id()).getMeeting();
             ParticipantEntity participant = participantService.getParticipantById(request.getParticipant_id()).getParticipant();
             if(!rroleService.getParticipantById(meeting.getRRoleId()).getTitle().equalsIgnoreCase("ALL")
                     && !participant.getRRoleId().equals(meeting.getRRoleId())){
                 response.setResponse(false);
                 return response;
             }
+
+             */
 
             TracingEntity entity = new TracingEntity();
             entity.setId(randomUUID());
